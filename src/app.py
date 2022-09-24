@@ -7,10 +7,12 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from api.utils import APIException, generate_sitemap
-from api.models import db
+from api.models import db, User
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+import datetime
 
 #from models import Person
 
@@ -18,6 +20,8 @@ ENV = os.getenv("FLASK_ENV")
 static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
 app.url_map.strict_slashes = False
+jwt = JWTManager(app)
+
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -62,6 +66,53 @@ def serve_any_other_file(path):
     response = send_from_directory(static_file_dir, path)
     response.cache_control.max_age = 0 # avoid cache memory
     return response
+
+
+""" Ruta para el Signup"""
+@app.route ('/signup', methods = ['POST'])
+def crear_usuario():
+    body = request.get_json()
+    #Primero veo que usuario no exista
+    existe = User.query.filter_by(email = body['email']).first()
+    if (existe is  not None):
+        return "Usuario Existe"
+
+    else :
+            
+        new_user = User()
+        new_user.email = body['email']
+        new_user.password = body['password']
+        new_user.is_active = True
+
+        db.session.add(new_user)
+        db.session.commit()
+        return "Usuario Nuevo Creado" 
+
+
+    """  Aca va la ruta para el login"""
+
+
+@app.route ('/login', methods = ['POST'])
+def login():
+    body = request.get_json()  #Esto hace que e lbody que envia la api sea leido como json.
+    one = User.query.filter_by(email=body['email'], password = body['password']).first() #Esto compara el "email" y "password" que llegó desde el body con los de la tabla User.
+    if (one is None): 
+        raise APIException("Ususario no existe o clave incorrecta", status_code=401)
+    else :
+        expiracion = datetime.timedelta(minutes=10)
+        acceso = create_access_token(identity= body['email'], expires_delta = expiracion)  
+        return {
+            "login" : "ok",
+            "token" : acceso,
+            "tiempo" : expiracion.total_seconds()
+        }  
+
+@app.route ('/private', methods = ['GET'])
+@jwt_required()
+def private ():
+    identidad = get_jwt_identity()
+    return f'Bienvenido {identidad}'
+
 
 
 # this only runs if `$ python src/main.py` is executed
