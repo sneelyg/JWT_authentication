@@ -10,6 +10,7 @@ import { Login } from "./pages/login";
 import { Private } from "./pages/private";
 
 import injectContext from "./store/appContext";
+import { Context } from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
