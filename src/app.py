@@ -94,6 +94,7 @@ def crear_usuario():
 
 @app.route ('/login', methods = ['POST'])
 def login():
+    print ("hola")
     body = request.get_json()  #Esto hace que e lbody que envia la api sea leido como json.
     one = User.query.filter_by(email=body['email'], password = body['password']).first() #Esto compara el "email" y "password" que llegó desde el body con los de la tabla User.
     if (one is None): 

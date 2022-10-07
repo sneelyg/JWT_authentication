@@ -27,7 +27,8 @@ export const Login_Form = () => {
             </div>
 
             <button type="submit" className="btn btn-primary"
-                onClick={() => {
+                onClick={(e) => {
+                    e.preventDefault();
                     actions.login_func(login_email, login_password);
                 }} >
                 Submit</button>

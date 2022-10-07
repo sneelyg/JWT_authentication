@@ -27,7 +27,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getMessage: async () => {
 				try {
 					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
+					const resp = await fetch("https://3001-sneelyg-jwtauthenticati-duxtun3mp5i.ws-us70.gitpod.io" + "/api/hello")
 					const data = await resp.json()
 					setStore({ message: data.message })
 					// don't forget to return something, that is how the async resolves
@@ -37,26 +37,38 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			/**Función de Login acá abajo */
 			login_func: (login_email, login_password) => {
 
+
 				console.log("Haciendo login con" + login_email + "  clave es  " + login_password)
-				let request_body = {
-					email: login_email,
-					password: login_password
-				}
+				var myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
+
+				var raw = JSON.stringify({
+					"email": "santiago@123.cl",
+					"password": "12345"
+				});
 
 				var requestOptions = {
 					method: 'POST',
-					redirect: 'follow',
-					body: request_body
+					headers: myHeaders,
+					body: raw,
+					redirect: 'follow'
 				};
 
-				console.log(requestOptions)
-
-				fetch("https://3001-sneelyg-jwtauthenticati-ajwnze17zv1.ws-us67.gitpod.io/login", requestOptions)
+				fetch("https://3001-sneelyg-jwtauthenticati-duxtun3mp5i.ws-us70.gitpod.io/login", requestOptions)
 					.then(response => response.json())
-					.then(result => console.log(result)) /**Se pone result.results pq la API entrega un objeto, con info y results. */
+					.then(result => {
+						console.log(result)
+						localStorage.setItem("token", result.token)
+						/**Local */
+					})
 					.catch(error => console.log('error', error));
+
+
+
+
 
 
 			},
