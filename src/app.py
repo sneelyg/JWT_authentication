@@ -86,7 +86,9 @@ def crear_usuario():
 
         db.session.add(new_user)
         db.session.commit()
-        return "Usuario Nuevo Creado" 
+        return {
+            "registro": "ok"
+        } 
 
 
     """  Aca va la ruta para el login"""
@@ -112,7 +114,12 @@ def login():
 @jwt_required()
 def private ():
     identidad = get_jwt_identity()
-    return f'Bienvenido {identidad}'
+    usuario = User.query.filter_by(email = identidad).first()
+    if (usuario):
+        print("usuario encontrado")
+        return jsonify({"success": "ok", "usuario": identidad})
+    else:
+        return jsonify({"success": "not", "message": "usuario no existe"})
 
 
 

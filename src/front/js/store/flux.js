@@ -27,7 +27,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getMessage: async () => {
 				try {
 					// fetching data from the backend
-					const resp = await fetch("https://3001-sneelyg-jwtauthenticati-duxtun3mp5i.ws-us70.gitpod.io" + "/api/hello")
+					const resp = await fetch("https://3001-sneelyg-jwtauthenticati-4xzemie4fs3.ws-us74.gitpod.io" + "/api/hello")
 					const data = await resp.json()
 					setStore({ message: data.message })
 					// don't forget to return something, that is how the async resolves
@@ -57,7 +57,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					redirect: 'follow'
 				};
 
-				fetch("https://3001-sneelyg-jwtauthenticati-duxtun3mp5i.ws-us70.gitpod.io/login", requestOptions)
+				fetch("https://3001-sneelyg-jwtauthenticati-4xzemie4fs3.ws-us74.gitpod.io/login", requestOptions)
 					.then(response => response.json())
 					.then(result => {
 						console.log(result)
@@ -76,23 +76,63 @@ const getState = ({ getStore, getActions, setStore }) => {
 			signup_func: (signup_email, signup_password) => {
 
 				console.log("Haciendo signup con" + signup_email + "  clave es  " + signup_password)
-				let request_body = {
+				var myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
+				let request_body = JSON.stringify({
 					"email": signup_email,
 					"password": signup_password
-				}
+				})
 
 				var requestOptions = {
 					method: 'POST',
-					redirect: 'follow',
-					body: request_body
+					headers: myHeaders,
+					body: request_body,
+					redirect: 'follow'
 				};
 
-				fetch("https://3001-sneelyg-jwtauthenticati-ajwnze17zv1.ws-us67.gitpod.io/signup", requestOptions)
+				fetch("https://3001-sneelyg-jwtauthenticati-4xzemie4fs3.ws-us74.gitpod.io/signup", requestOptions)
 					.then(response => response.json())
-					.then(result => setStore({ resultado_signup: result.results })) /**Se pone result.results pq la API entrega un objeto, con info y results. */
+					.then(result => {
+						console.log(result)
+						if (result.registro == "ok") {
+							alert("registro exitoso");
+							window.location.href = "/";
+						}
+						else { alert("Registro no exitoso") }
+
+					}).catch(error => console.log('error', error));
+
+
+			},
+
+			private: () => {
+				console.log("llamando funcion privada")
+				var myHeaders = new Headers();
+				var token1 = localStorage.getItem("token");
+				let autorizacion = "Bearer " + token1;
+				console.log(autorizacion)
+				myHeaders.append("Authorization", autorizacion);
+
+
+				var requestOptions = {
+					method: 'GET',
+					headers: myHeaders,
+					redirect: 'follow'
+				};
+
+				fetch("https://3001-sneelyg-jwtauthenticati-4xzemie4fs3.ws-us74.gitpod.io/private", requestOptions)
+					.then(response => response.json())
+					.then(result => {
+
+						if (result.success == "ok") {
+							console.log(result)
+						}
+						else {
+							console.log("NOT")
+							window.location.href = "/login"
+						}
+					})
 					.catch(error => console.log('error', error));
-
-
 			},
 
 			changeColor: (index, color) => {

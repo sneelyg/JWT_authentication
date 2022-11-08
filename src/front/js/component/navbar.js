@@ -17,6 +17,21 @@ export const Navbar = () => {
 					<span className="navbar-brand mb-0 h1">Sign Up</span>
 				</Link>
 
+				<Link to="/privada">
+					<span className="navbar-brand mb-0 h1">Pagina Privada</span>
+				</Link>
+
+				<button
+					onClick={() => {
+						window.localStorage.clear();
+						window.location.href = "/";
+						alert("Cesión Cerrada");
+					}}
+
+				>
+					Cerrar Sesion
+				</button>
+
 				<div className="ml-auto">
 					<Link to="/demo">
 						<button className="btn btn-primary">Check the Context in action</button>
